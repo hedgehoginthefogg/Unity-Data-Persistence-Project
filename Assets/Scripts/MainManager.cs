@@ -6,22 +6,28 @@ using UnityEngine.UI;
 
 public class MainManager : MonoBehaviour
 {
+
     public Brick BrickPrefab;
     public int LineCount = 6;
     public Rigidbody Ball;
 
     public Text ScoreText;
+    // create variable to start best score text
+    public Text BestScoreText;
     public GameObject GameOverText;
     
     private bool m_Started = false;
     private int m_Points;
+ 
     
     private bool m_GameOver = false;
 
-    
+
     // Start is called before the first frame update
     void Start()
     {
+        LoadSavedScore();
+        // 
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -57,7 +63,7 @@ public class MainManager : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                SceneManager.LoadScene(1);
             }
         }
     }
@@ -70,7 +76,48 @@ public class MainManager : MonoBehaviour
 
     public void GameOver()
     {
+
+        updateBestScore();
+        // save the data
+        DataHandler.Instance.SaveBestScore();
         m_GameOver = true;
         GameOverText.SetActive(true);
+    }
+
+    // Method to update best score if the current score is better
+    public void updateBestScore()
+    {
+        Debug.Log(BestScoreText.text);
+         if (BestScoreText == null)
+        {
+            Debug.LogError("BestScoreText is not assigned!");
+            return;
+        }
+
+        if (m_Points > DataHandler.Instance.bestScorePoints)
+        { 
+            // if current score is highest,store in DataHandler so it persists
+            DataHandler.Instance.bestScorePoints = m_Points;
+            // if current user name has best score, store it in best score username in DataHandler so persists
+            DataHandler.Instance.bestScoreUserName = DataHandler.Instance.userName;
+            // update on screen name
+            BestScoreText.text = "Best Score: " + DataHandler.Instance.bestScoreUserName + " : " + DataHandler.Instance.bestScorePoints;
+        }
+    }
+
+    public void LoadSavedScore()
+    {
+    // load best score
+    DataHandler.Instance.LoadBestScore();
+    // debug
+    Debug.Log(DataHandler.Instance.bestScorePoints);
+    Debug.Log(DataHandler.Instance.bestScoreUserName);
+
+    // update text
+    if (DataHandler.Instance.bestScoreUserName != null && DataHandler.Instance.bestScorePoints != null)
+    {
+        BestScoreText.text = "Best Score: " + DataHandler.Instance.bestScoreUserName + " : " + DataHandler.Instance.bestScorePoints;
+    }
+
     }
 }
