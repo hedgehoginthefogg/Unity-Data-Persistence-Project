@@ -37,11 +37,15 @@ public class MenuUIHandler : MonoBehaviour
     // function called when start button is pressed
     public void OnStartButtonPressed()
     {
-        // Get text from the input field and store in userInput variable
-        DataHandler.Instance.userName = inputField.text;
-        Debug.Log("User input stored: " + DataHandler.Instance.userName);
-        // Launch game
-        SceneManager.LoadScene(1);
+        // make sure user has written username before starting game
+        if(inputField.text != "")
+        {
+            // Get text from the input field and store in userInput variable
+            DataHandler.Instance.userName = inputField.text;
+            Debug.Log("User input stored: " + DataHandler.Instance.userName);
+            // Launch game
+            SceneManager.LoadScene(1);
+        }
     }
 
 
